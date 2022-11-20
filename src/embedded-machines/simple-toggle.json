@@ -1,0 +1,22 @@
+{
+    "id": "toggle",
+    "initial": "inactive",
+    "context": {
+        "alreadySeen": false
+    },
+    "states": {
+        "inactive": {
+            "entry": "displaySwitchForTheFirstTime",
+            "on": {
+                "TOGGLE": "active"
+            }
+        },
+        "active": {
+            "on": {
+                "TOGGLE": {
+                    "target": "inactive"
+                }
+            }
+        }
+    }
+}

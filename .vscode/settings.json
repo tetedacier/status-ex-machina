@@ -1,0 +1,10 @@
+{
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "src/embeded-machines/**.json",
+            ],
+            "url": "/src/schemes/xstate.json"
+        }
+    ]
+}

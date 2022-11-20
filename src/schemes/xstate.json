@@ -1,0 +1,245 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "simpleValue": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                }
+            ]
+        },
+        "stringTarget": {
+            "description": "",
+            "oneOf": [
+                {
+                    "pattern": "^\\.[a-zAZ]+(\\.[a-zAZ]+)*$",
+                    "type": "string"
+                },
+                {
+                    "pattern": "^[a-zAZ]+(\\.[a-zAZ]+)*$",
+                    "type": "string"
+                }
+            ]
+        },
+        "target": {
+            "description": "if this field is omitted it represents an internal self-transition. if value start with a dot it represents an internal transition to a child",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/stringTarget"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stringTarget"
+                    }
+                }
+            ]
+        },
+        "stateNode": {
+            "description": "if this is set to undefined or have empty action if stops transition propagation, see https://xstate.js.org/docs/guides/transitions.html#forbidden-transitions",
+            "type": "object",
+            "properties": {
+                "target": {
+                    "$ref": "#/definitions/target"
+                },
+                "in": {
+                    "description": "https://xstate.js.org/docs/guides/guards.html#in-state-guards",
+                    "type": "string"
+                },
+                "internal": {
+                    "type": "boolean"
+                },
+                "actions": {
+                    "description": "single string allowed ?",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "stateProperties": {
+            "description": "https://xstate.js.org/docs/guides/states.html",
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "type": "object"
+                },
+                "onDone": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "actions": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "states": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                        "^[a-zA-Z]+$": {
+                            "$ref": "#/definitions/stateProperties"
+                        }
+                    }
+                },
+                "tags": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "final",
+                        "atomic",
+                        "parallel",
+                        "compound",
+                        "history"
+                    ]
+                },
+                "always": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": {},
+                                "properties": {
+                                    "target": {
+                                        "description": "reference to another state",
+                                        "type": "string"
+                                    },
+                                    "cond": {
+                                        "description": "reference a guards of the machine",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "history": {
+                    "description": "this property is intended to be used in conjunction with type history",
+                    "type": "string",
+                    "enum": [
+                        "shallow",
+                        "deep"
+                    ]
+                },
+                "entry": {
+                    "description": "action name referenced in machine options which will be called with the current context and event as define in `./xStateOptions.json` schema",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "exit": {
+                    "description": "action name referenced in machine options which will be called with the current context and event as define in `./xStateOptions.json` schema",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "on": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                        "^(([A-Z]*)|\\*)$": {
+                            "oneOf": [
+                                {
+                                    "description": "name of target node",
+                                    "type": "string"
+                                },
+                                {
+                                    "description": "more elaborate description of the transition target",
+                                    "$ref": "#/definitions/stateNode"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "type": "object",
+    "title": "xState",
+    "description": "Connection object : Ask for access to the system",
+    "additionalProperties": false,
+    "required": [
+        "id",
+        "initial",
+        "states"
+    ],
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "initial": {
+            "type": "string"
+        },
+        "context": {
+            "type": "object",
+            "description": "https://xstate.js.org/docs/guides/context.html",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[a-zA-Z]+$": {
+                    "$ref": "#/definitions/simpleValue"
+                }
+            }
+        },
+        "states": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[a-zA-Z]+$": {
+                    "$ref": "#/definitions/stateProperties"
+                }
+            }
+        }
+    }
+}

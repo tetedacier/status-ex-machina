@@ -1,0 +1,21 @@
+{
+    "type": "object",
+    "properties": {
+        "actions": {
+            "type": "object",
+            "description": "the mapping of action names to their implementation"
+        },
+        "delays": {
+            "type": "object",
+            "description": "the mapping of delay names to their implementation"
+        },
+        "guards": {
+            "type": "object",
+            "description": "the mapping of transition guard (cond) names to their implementation"
+        },
+        "services": {
+            "type": "object",
+            "description": "the mapping of invoked service (src) names to their implementation"
+        }
+    }
+}
